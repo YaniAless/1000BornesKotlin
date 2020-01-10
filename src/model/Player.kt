@@ -1,6 +1,6 @@
 package data.model
 //Array card not null
-data class Player(val name : String, var cardSet: Array<Card>? = null, var score: Int = 0, var buffStatusList : Array<BotteStatus>? = null, var debuffStatusList : Array<DebuffStatus>? = null)
+data class Player(val name : String, var cardSet: MutableList<Card>, var score: Int = 0, var buffStatusList : MutableList<BotteStatus>? = mutableListOf(), var debuffStatusList : MutableList<DebuffStatus>? = mutableListOf())
 
 
 enum class BotteStatus(id: Int, title: String) {
