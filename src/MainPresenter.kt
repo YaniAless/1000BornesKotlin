@@ -16,7 +16,9 @@ class MainPresenter {
         launchGame()
     }
 
-
+    /**
+     * Préparation du jeu, création des joueurs, de la pioche
+     */
     private fun prepareGame() {
 
         var playerList : Array<Player> = arrayOf()
@@ -31,6 +33,11 @@ class MainPresenter {
         board = Board(playerList)
     }
 
+    /**
+     * Fonction de déroulement du jeu.
+     * Pour chaque joueur, il lui est demandé une action sur la fonction askPlayerWhatDo (paramètre = Player, valeur de retour = int)
+     * La fonction askWhoToDebuff s'active dès lors que le joueur utilise un débuff, on lui demande donc l'ennemi à attaquer( paramètre = Liste de Player, valeur de retour = Player)
+     */
     private fun  launchGame() {
         while (gameEnd == false) {
             board.playerList.forEach {player ->
@@ -57,6 +64,9 @@ class MainPresenter {
         }
     }
 
+    /**
+     * Vérifie le choix de la carte du joueur, et agit en conséquence
+     */
     private fun handlePlayerChoice(player: Player, cardChoice : Card, foe : Player? = null): Boolean {
         when(cardChoice.id) {
             Card.SPEED25.id -> return addSpeedToPlayer(player, 25)
@@ -82,6 +92,9 @@ class MainPresenter {
         }
     }
 
+    /**
+     * Ajoute le buff choisit au joueur
+     */
     private fun addBuffToPlayer(player: Player, id: Int): Boolean {
         val botteStatus = BotteStatus.fromInt(id)
         if(botteStatus != null) {
@@ -100,6 +113,9 @@ class MainPresenter {
         return false
     }
 
+    /**
+     * Débuff l'ennemi choisit
+     */
     private fun addDeBuffToPlayer(foe: Player?, id: Int): Boolean {
         foe?.buffStatusList?.forEach {
             if(it.id == id || it.id == BotteStatus.PRIMARY.id && id == DebuffStatus.REDLIGHT.id) {
@@ -124,6 +140,9 @@ class MainPresenter {
         return false
     }
 
+    /**
+     * Supprime un débuff lorsque le joueur utilise une carte buff pour supprimer un débuff
+     */
     private fun removeDeBuffToPlayer(player: Player, id: Int): Boolean {
         val filteredDebuffStatusList: MutableList<DebuffStatus> = player.debuffStatusList.filter {it.id != id}.toMutableList()
         if(filteredDebuffStatusList.isNotEmpty()) {
@@ -133,6 +152,9 @@ class MainPresenter {
         return false
     }
 
+    /**
+     * Ajoute le nombre de points au score
+     */
     private fun addSpeedToPlayer(player: Player, speed: Int): Boolean {
         if(player.debuffStatusList.size == 0) {
             player.score += speed
@@ -142,6 +164,9 @@ class MainPresenter {
         }
     }
 
+    /**
+     * Prépare la pioche
+     */
     fun prepareCardList() : MutableList<Card> {
         var cardList : MutableList<Card> =  mutableListOf(Card.ACE, Card.TANKER, Card.PUNCTURE_PROOF, Card.PRIMARY)
         for (i in 1 .. 3) {
@@ -183,6 +208,9 @@ class MainPresenter {
         return cardList.apply { this.shuffle() }
     }
 
+    /**
+     * Vérifie la fin du jeu ( possiblement non finie)
+     */
     private fun checkGameEnd() {
         board.playerList.forEach {
             if(it.score >= 1000 || cardDeck.size == 0) {
