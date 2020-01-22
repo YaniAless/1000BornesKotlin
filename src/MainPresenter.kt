@@ -1,4 +1,4 @@
-import com.sun.org.apache.xpath.internal.operations.Bool
+
 import data.model.*
 
 const val PLAYER_NUMBER = 2

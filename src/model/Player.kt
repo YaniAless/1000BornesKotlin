@@ -1,6 +1,5 @@
 package data.model
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 
 //Array card not null
 data class Player(val name : String, var cardSet: MutableList<Card>, var debuffStatusList : MutableList<DebuffStatus>, var buffStatusList : MutableList<BotteStatus> = mutableListOf(), var score: Int = 0)
