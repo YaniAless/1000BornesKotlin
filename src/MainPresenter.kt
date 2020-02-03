@@ -1,5 +1,6 @@
 
 import data.model.*
+import jdk.jfr.Threshold
 
 const val PLAYER_NUMBER = 2
 
@@ -39,14 +40,17 @@ class MainPresenter {
      * La fonction askWhoToDebuff s'active dès lors que le joueur utilise un débuff, on lui demande donc l'ennemi à attaquer( paramètre = Liste de Player, valeur de retour = Player)
      */
     private fun  launchGame() {
+        mainView.displayGameTitle()
+        Thread.sleep(1000)
+        mainView.displayStartMessage()
         while (gameEnd == false) {
             board.playerList.forEach {player ->
+                mainView.displayPlayerScore(player)
                 var response = false
                 var cardChoice: Int = 0
                 while(!response) {
                     cardChoice = mainView.askPlayerWhatDo(player)
                     val cardChoosen: Card = player.cardSet[cardChoice]
-
 
                     if (cardChoosen.buff !== null) {
                         response = handlePlayerChoice(player, cardChoosen)
