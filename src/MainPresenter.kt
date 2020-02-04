@@ -54,33 +54,49 @@ class MainPresenter {
 
                 var response = false
                 var cardChoice: Int = 0
-
+                var hasDroppedCard = false
                 while(!response) {
                     cardChoice = mainView.askPlayerWhatDo(player)
-                    val cardChoosen: Card = player.cardSet[cardChoice]
+                    if (cardChoice == 6) {
+                        dropACard(player)
+                        hasDroppedCard = true
+                        response = true
+                    }
+                    else {
+                        val cardChoosen: Card = player.cardSet[cardChoice]
 
-                    if (cardChoosen.buff !== null) {
-                        response = handlePlayerChoice(player, cardChoosen)
-                    } else {
-                        /// TODO : Need to fix this part
-                        val otherPlayer = mainView.askWhoToDebuff(board.playerList.filter { player.name != it.name }, cardChoosen)
-                        println("OtherPlayer $otherPlayer")
-                        println("board.playerList.get(otherPlayer) ${board.playerList.get(otherPlayer)}")
-                        println("cardChoosen $cardChoosen")
-                        response = handlePlayerChoice(player, cardChoosen, board.playerList.get(otherPlayer))
+                        if (cardChoosen.buff !== null) {
+                            response = handlePlayerChoice(player, cardChoosen)
+                        } else {
+                            /// TODO : Need to handle when a player attack another
+                            val otherPlayer = mainView.askWhoToDebuff(board.playerList.filter { player.name != it.name }, cardChoosen)
+                            println("OtherPlayer $otherPlayer")
+                            println("board.playerList.get(otherPlayer) ${board.playerList[otherPlayer]}")
+                            println("cardChoosen $cardChoosen")
+                            response = handlePlayerChoice(player, cardChoosen, board.playerList[otherPlayer])
+                        }
                     }
                 }
-                player.cardSet.removeAt(cardChoice)
 
-                pickACard(player)
+                if (!hasDroppedCard) {
+                    player.cardSet.removeAt(cardChoice)
+                    pickACard(player)
+                }
+
                 Thread.sleep(1000)
                 checkGameEnd()
             }
         }
     }
 
-    private fun dropACard(){
-        /// TODO
+    private fun dropACard(player: Player){
+        val cardId = mainView.askPlayerWhichCardToDrop(player)
+        val chosenCard = player.cardSet[cardId]
+
+        player.cardSet.remove(chosenCard)
+        println("Tu as choisis de défausser cette carte : $chosenCard")
+
+        pickACard(player)
     }
 
     private fun pickACard(player: Player){
@@ -125,9 +141,7 @@ class MainPresenter {
         if(botteStatus != null) {
             var isBuffable: Boolean = true
             player.buffStatusList.forEach {
-                if(it.id == botteStatus.id) {
-                    isBuffable = false
-                }
+                if(it.id == botteStatus.id) isBuffable = false
             }
 
             if(isBuffable) {

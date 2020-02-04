@@ -5,28 +5,32 @@ import java.lang.NumberFormatException
 
 class MainView {
 
-    public fun askPlayerWhatDo(player : Player): Int {
+    fun askPlayerWhatDo(player : Player): Int {
+        clear()
         println("Alors, que voulez-vous faire cher ${player.name} ?\n")
         println("Voici tes cartes :")
         displayPlayerCardSet(player)
         return readPlayerCardChoice()
     }
 
-    private fun readPlayerCardChoice(): Int{
+    private fun readPlayerCardChoice(isDropping: Boolean = false): Int{
         var playerChoice: String? = readLine()
+
+        var max = if(isDropping) 6 else 7
+
         playerChoice?.let {
             try {
                 var choice: Int = playerChoice.toInt()
-                if(choice > 0 && choice <= 6){
+                if(choice in 1..max){
                     return choice-1
                 }
                 else{
-                    println("Il faut choisir une valeur comprise entre 1 et 6")
+                    println("Il te faut choisir une valeur comprise entre 1 et 7")
                     readPlayerCardChoice()
                 }
             }
             catch (e: NumberFormatException){
-                println("Désolé je n'ai pas compris ton choix, insert une valeur comprise entre 1 et 6")
+                println("Désolé je n'ai pas compris ton choix, insert une valeur comprise entre 1 et 7")
                 readPlayerCardChoice()
             }
         }
@@ -34,18 +38,26 @@ class MainView {
     }
 
 
-    private fun displayPlayerCardSet(player : Player){
+    private fun displayPlayerCardSet(player : Player, isDropping: Boolean = false){
         var i = 1
         player.cardSet.forEach {
-            println("${i} - ${it.title} : ${if (it.buff != null) it.buff else it.debuff}")
+            println("$i - ${it.title} : ${if (it.buff != null) it.buff else it.debuff}")
             i++
         }
+        if(!isDropping) println("7 - Defausser : Tu choisis de defausser une carte")
     }
 
-    public fun askWhoToDebuff(playerList: List<Player>, card: Card): Int {
+    fun askWhoToDebuff(playerList: List<Player>, card: Card): Int {
+        clear()
         println("Ah ! Un peu d'action ! Qui veux-tu attaquer avec ta carte ${card.title}")
         displayPlayerList(playerList)
         return readPlayerTargetChoice(playerList)
+    }
+
+    fun askPlayerWhichCardToDrop(player: Player): Int{
+        clear()
+        displayPlayerCardSet(player, true)
+        return readPlayerCardChoice()
     }
 
     private fun readPlayerTargetChoice(playerList: List<Player>): Int{
@@ -82,7 +94,7 @@ class MainView {
         }
     }
 
-    public fun displayPlayerScore(player: Player){
+    fun displayPlayerScore(player: Player){
         when(player.score){
             0 -> println("Vous êtes à ${player.score} bornes, il serait temps de démarrer nan ?")
             in 100..500 -> println("Ah vous êtes parti ! Continuez comme ça ! Vous êtes à ${player.score} bornes")
@@ -90,17 +102,17 @@ class MainView {
         }
     }
 
-    public fun displayPickedCard(pickedCard: Card){
+    fun displayPickedCard(pickedCard: Card){
         println("Vous piochez une carte")
         println("Vous avez pioché la carte : ${pickedCard.title}")
-        if(pickedCard.buff != null) println("Elle a pour effet : ${pickedCard.buff}") else println("Elle a pour effet : ${pickedCard.debuff}")
+        if(pickedCard.buff != null) println("Effet : ${pickedCard.buff}") else println("Effet : ${pickedCard.debuff}")
     }
 
-    public fun displayPlayerBuff(player: Player){
+    fun displayPlayerBuff(player: Player){
         if(player.buffStatusList.count() > 0) println("Voici vos bonus --> ${player.buffStatusList}") else println("Vous n'avez aucun bonus")
     }
 
-    public fun displayPlayerDebuff(player: Player){
+    fun displayPlayerDebuff(player: Player){
         if(player.debuffStatusList.count() > 0) println("Voici vos malus --> ${player.debuffStatusList}") else println("Vous n'avez aucun malus")
 
     }
@@ -109,7 +121,7 @@ class MainView {
     /**
      * Les fonctions ci-dessous permettent de rendre plus agréable l'application en affichant les titres / séparateurs etc.
      */
-    public fun displayGameTitle(){
+    fun displayGameTitle(){
         println("\n" +
                 "    ▄▄▄▄      ▄▄▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄▄▄        ▄▄▄▄▄▄▄▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄ \n" +
                 "  ▄█░░░░▌    ▐░░░░░░░░░▌  ▐░░░░░░░░░▌  ▐░░░░░░░░░▌      ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌\n" +
@@ -125,7 +137,11 @@ class MainView {
                 "                                                                                                                                      \n")
     }
 
-    public fun displayStartMessage() {
+    fun displayStartMessage() {
         println("La partie commence !")
+    }
+
+    fun clear(){
+        print("\u001b[H\u001b[2J")
     }
 }
