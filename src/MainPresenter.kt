@@ -43,11 +43,17 @@ class MainPresenter {
         mainView.displayGameTitle()
         Thread.sleep(1000)
         mainView.displayStartMessage()
+
         while (gameEnd == false) {
+
             board.playerList.forEach {player ->
                 mainView.displayPlayerScore(player)
+
+                println("Player : ${player.debuffStatusList}")
+
                 var response = false
                 var cardChoice: Int = 0
+
                 while(!response) {
                     cardChoice = mainView.askPlayerWhatDo(player)
                     val cardChoosen: Card = player.cardSet[cardChoice]
@@ -55,17 +61,27 @@ class MainPresenter {
                     if (cardChoosen.buff !== null) {
                         response = handlePlayerChoice(player, cardChoosen)
                     } else {
-                        val otherPlayer = mainView.askWhoToDebuff(board.playerList.filter { player.name != it.name })
+                        val otherPlayer = mainView.askWhoToDebuff(board.playerList.filter { player.name != it.name }, cardChoosen)
                         response = handlePlayerChoice(player, cardChoosen)
                     }
                 }
                 player.cardSet.removeAt(cardChoice)
 
-                player.cardSet.add(cardDeck.removeAt(0))
-
+                pickACard(player)
+                Thread.sleep(1000)
                 checkGameEnd()
             }
         }
+    }
+
+    private fun dropACard(){
+        /// TODO
+    }
+
+    private fun pickACard(player: Player){
+        val pickedCard = cardDeck.removeAt(0)
+        player.cardSet.add(pickedCard)
+        mainView.displayPickedCard(pickedCard)
     }
 
     /**
@@ -149,11 +165,13 @@ class MainPresenter {
      */
     private fun removeDeBuffToPlayer(player: Player, id: Int): Boolean {
         val filteredDebuffStatusList: MutableList<DebuffStatus> = player.debuffStatusList.filter {it.id != id}.toMutableList()
+        /*
         if(filteredDebuffStatusList.isNotEmpty()) {
             player.debuffStatusList = filteredDebuffStatusList
             return true
-        }
-        return false
+        }*/
+        player.debuffStatusList = filteredDebuffStatusList
+        return true
     }
 
     /**
