@@ -75,6 +75,7 @@ class MainPresenter {
                     player.cardSet.removeAt(cardChoice)
                     pickACard(player)
                 }
+                println("Au tour de l'adversaire !")
                 Thread.sleep(2000)
                 checkGameEnd()
             }
