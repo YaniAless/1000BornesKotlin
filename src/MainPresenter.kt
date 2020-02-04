@@ -46,10 +46,11 @@ class MainPresenter {
 
         while (gameEnd == false) {
 
-            board.playerList.forEach {player ->
+            board.playerList.forEach { player ->
                 mainView.displayPlayerScore(player)
 
-                println("Player : ${player.debuffStatusList}")
+                mainView.displayPlayerBuff(player)
+                mainView.displayPlayerDebuff(player)
 
                 var response = false
                 var cardChoice: Int = 0
@@ -67,7 +68,6 @@ class MainPresenter {
                         println("board.playerList.get(otherPlayer) ${board.playerList.get(otherPlayer)}")
                         println("cardChoosen $cardChoosen")
                         response = handlePlayerChoice(player, cardChoosen, board.playerList.get(otherPlayer))
-                        //addDeBuffToPlayer(board.playerList.get(otherPlayer),cardChoice)
                     }
                 }
                 player.cardSet.removeAt(cardChoice)

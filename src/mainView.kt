@@ -96,6 +96,15 @@ class MainView {
         if(pickedCard.buff != null) println("Elle a pour effet : ${pickedCard.buff}") else println("Elle a pour effet : ${pickedCard.debuff}")
     }
 
+    public fun displayPlayerBuff(player: Player){
+        if(player.buffStatusList.count() > 0) println("Voici vos bonus --> ${player.buffStatusList}") else println("Vous n'avez aucun bonus")
+    }
+
+    public fun displayPlayerDebuff(player: Player){
+        if(player.debuffStatusList.count() > 0) println("Voici vos malus --> ${player.debuffStatusList}") else println("Vous n'avez aucun malus")
+
+    }
+
 
     /**
      * Les fonctions ci-dessous permettent de rendre plus agréable l'application en affichant les titres / séparateurs etc.
