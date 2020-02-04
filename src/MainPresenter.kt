@@ -61,8 +61,13 @@ class MainPresenter {
                     if (cardChoosen.buff !== null) {
                         response = handlePlayerChoice(player, cardChoosen)
                     } else {
+                        /// TODO : Need to fix this part
                         val otherPlayer = mainView.askWhoToDebuff(board.playerList.filter { player.name != it.name }, cardChoosen)
-                        response = handlePlayerChoice(player, cardChoosen)
+                        println("OtherPlayer $otherPlayer")
+                        println("board.playerList.get(otherPlayer) ${board.playerList.get(otherPlayer)}")
+                        println("cardChoosen $cardChoosen")
+                        response = handlePlayerChoice(player, cardChoosen, board.playerList.get(otherPlayer))
+                        //addDeBuffToPlayer(board.playerList.get(otherPlayer),cardChoice)
                     }
                 }
                 player.cardSet.removeAt(cardChoice)

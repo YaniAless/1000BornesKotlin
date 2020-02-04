@@ -58,12 +58,12 @@ class MainView {
                 }
                 else{
                     println("Il faut choisir une valeur comprise entre 0 et ${playerList.count()}")
-                    readPlayerCardChoice()
+                    readPlayerTargetChoice(playerList)
                 }
             }
             catch (e: NumberFormatException){
                 println("Désolé je n'ai pas compris ton choix, insert une valeur comprise entre 1 et 6")
-                readPlayerCardChoice()
+                readPlayerTargetChoice(playerList)
             }
         }
         return -1
@@ -73,11 +73,11 @@ class MainView {
         println("Voici la liste des cibles, fais le bon choix !")
         var i = 0
         playerList.forEach {
-            println("-------------------------------------JOUEUR $i------------------------------------")
+            println("-------------------------------------CIBLE NUMERO '$i'------------------------------------")
             print("Cible : '${it.name}' --- Score actuel : '${it.score}'\n")
             if(it.buffStatusList.count() > 0) println("Liste des bonus : ${it.buffStatusList}") else println("Il ne possède aucun bonus")
             if(it.debuffStatusList.count() > 0) println("Liste des malus : ${it.debuffStatusList}") else println("Il ne possède aucun malus")
-            println("-------------------------------------JOUEUR $i------------------------------------")
+            println("-------------------------------------CIBLE NUMERO '$i'------------------------------------")
             i++
         }
     }
