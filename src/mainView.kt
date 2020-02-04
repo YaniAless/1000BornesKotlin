@@ -5,9 +5,13 @@ import java.lang.NumberFormatException
 
 class MainView {
 
+    fun displayTurnMessage(player: Player){
+        println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n--------------------------------------${player.name}--------------------------------------")
+        println("A ton tour ${player.name} ! Que veux-tu faire ?")
+    }
+
     fun askPlayerWhatDo(player : Player): Int {
-        clear()
-        println("Alors, que voulez-vous faire cher ${player.name} ?\n")
+        Thread.sleep(1000)
         println("Voici tes cartes :")
         displayPlayerCardSet(player)
         return readPlayerCardChoice()
@@ -15,14 +19,13 @@ class MainView {
 
     private fun readPlayerCardChoice(isDropping: Boolean = false): Int{
         var playerChoice: String? = readLine()
-
         var max = if(isDropping) 6 else 7
 
         playerChoice?.let {
             try {
                 var choice: Int = playerChoice.toInt()
                 if(choice in 1..max){
-                    return choice-1
+                    return choice -1
                 }
                 else{
                     println("Il te faut choisir une valeur comprise entre 1 et 7")
@@ -37,7 +40,6 @@ class MainView {
         return -1
     }
 
-
     private fun displayPlayerCardSet(player : Player, isDropping: Boolean = false){
         var i = 1
         player.cardSet.forEach {
@@ -47,17 +49,20 @@ class MainView {
         if(!isDropping) println("7 - Defausser : Tu choisis de defausser une carte")
     }
 
-    fun askWhoToDebuff(playerList: List<Player>, card: Card): Int {
-        clear()
+    fun askWhoToDebuff(playerList: List<Player>, card: Card): Player {
         println("Ah ! Un peu d'action ! Qui veux-tu attaquer avec ta carte ${card.title}")
         displayPlayerList(playerList)
-        return readPlayerTargetChoice(playerList)
+        val chosenPlayerId =  readPlayerTargetChoice(playerList)
+        return playerList[chosenPlayerId]
     }
 
     fun askPlayerWhichCardToDrop(player: Player): Int{
-        clear()
         displayPlayerCardSet(player, true)
         return readPlayerCardChoice()
+    }
+
+    fun displayCardPlayed(card: Card, wasDrop: Boolean = false){
+        if(wasDrop) println("Tu as défaussé la carte : ${card.title}") else println("Tu as joué la carte : ${card.title}")
     }
 
     private fun readPlayerTargetChoice(playerList: List<Player>): Int{
@@ -96,25 +101,24 @@ class MainView {
 
     fun displayPlayerScore(player: Player){
         when(player.score){
-            0 -> println("Vous êtes à ${player.score} bornes, il serait temps de démarrer nan ?")
-            in 100..500 -> println("Ah vous êtes parti ! Continuez comme ça ! Vous êtes à ${player.score} bornes")
-            else -> println("Vous y êtes presque ! Vous êtes à ${player.score} bornes, allez encore un peu et vous y serez !")
+            0 -> println("Tu es à ${player.score} bornes, il serait temps de démarrer nan ?")
+            in 100..500 -> println("Ah tu es parti ! Continue comme ça ! Tu es à ${player.score} bornes")
+            else -> println("Tu y es presque ! Tu es à ${player.score} bornes, allez encore un peu et tu y seras !")
         }
     }
 
     fun displayPickedCard(pickedCard: Card){
-        println("Vous piochez une carte")
-        println("Vous avez pioché la carte : ${pickedCard.title}")
+        println("Tu pioches une carte")
+        println("Tu as pioché la carte : ${pickedCard.title}")
         if(pickedCard.buff != null) println("Effet : ${pickedCard.buff}") else println("Effet : ${pickedCard.debuff}")
     }
 
     fun displayPlayerBuff(player: Player){
-        if(player.buffStatusList.count() > 0) println("Voici vos bonus --> ${player.buffStatusList}") else println("Vous n'avez aucun bonus")
+        if(player.buffStatusList.count() > 0) println("Voici tes bonus --> ${player.buffStatusList}") else println("Tu n'as aucun bonus")
     }
 
     fun displayPlayerDebuff(player: Player){
-        if(player.debuffStatusList.count() > 0) println("Voici vos malus --> ${player.debuffStatusList}") else println("Vous n'avez aucun malus")
-
+        if(player.debuffStatusList.count() > 0) println("Voici tes malus --> ${player.debuffStatusList}") else println("Tu n'as aucun malus")
     }
 
 
@@ -139,9 +143,5 @@ class MainView {
 
     fun displayStartMessage() {
         println("La partie commence !")
-    }
-
-    fun clear(){
-        print("\u001b[H\u001b[2J")
     }
 }

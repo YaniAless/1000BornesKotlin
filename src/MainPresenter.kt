@@ -1,4 +1,3 @@
-
 import data.model.*
 import jdk.jfr.Threshold
 
@@ -6,8 +5,8 @@ const val PLAYER_NUMBER = 2
 
 class MainPresenter {
 
-    var gameEnd : Boolean = false
-    lateinit var board : Board
+    var gameEnd: Boolean = false
+    lateinit var board: Board
     val mainView = MainView()
     var cardDeck = prepareCardList()
     //private var presenter: GamePresenter = GamePresenter(this)
@@ -22,10 +21,10 @@ class MainPresenter {
      */
     private fun prepareGame() {
 
-        var playerList : Array<Player> = arrayOf()
-        for(p in 1 .. PLAYER_NUMBER) {
+        var playerList: Array<Player> = arrayOf()
+        for (p in 1..PLAYER_NUMBER) {
             var cardSet = mutableListOf<Card>()
-            for( i in 1 .. 6) {
+            for (i in 1..6) {
                 cardSet.add(cardDeck.removeAt(0))
             }
             playerList += Player("Player $p", cardSet, mutableListOf(DebuffStatus.REDLIGHT))
@@ -39,67 +38,58 @@ class MainPresenter {
      * Pour chaque joueur, il lui est demandé une action sur la fonction askPlayerWhatDo (paramètre = Player, valeur de retour = int)
      * La fonction askWhoToDebuff s'active dès lors que le joueur utilise un débuff, on lui demande donc l'ennemi à attaquer( paramètre = Liste de Player, valeur de retour = Player)
      */
-    private fun  launchGame() {
+    private fun launchGame() {
         mainView.displayGameTitle()
-        Thread.sleep(1000)
         mainView.displayStartMessage()
-
+        Thread.sleep(1500)
         while (gameEnd == false) {
-
             board.playerList.forEach { player ->
-                mainView.displayPlayerScore(player)
-
-                mainView.displayPlayerBuff(player)
-                mainView.displayPlayerDebuff(player)
 
                 var response = false
                 var cardChoice: Int = 0
                 var hasDroppedCard = false
-                while(!response) {
+                while (!response) {
+                    mainView.displayTurnMessage(player)
+                    mainView.displayPlayerBuff(player)
+                    mainView.displayPlayerDebuff(player)
+                    mainView.displayPlayerScore(player)
+
                     cardChoice = mainView.askPlayerWhatDo(player)
+
                     if (cardChoice == 6) {
                         dropACard(player)
                         hasDroppedCard = true
                         response = true
-                    }
-                    else {
+                    } else {
                         val cardChoosen: Card = player.cardSet[cardChoice]
-
                         if (cardChoosen.buff !== null) {
                             response = handlePlayerChoice(player, cardChoosen)
+                            mainView.displayCardPlayed(cardChoosen)
                         } else {
-                            /// TODO : Need to handle when a player attack another
                             val otherPlayer = mainView.askWhoToDebuff(board.playerList.filter { player.name != it.name }, cardChoosen)
-                            println("OtherPlayer $otherPlayer")
-                            println("board.playerList.get(otherPlayer) ${board.playerList[otherPlayer]}")
-                            println("cardChoosen $cardChoosen")
-                            response = handlePlayerChoice(player, cardChoosen, board.playerList[otherPlayer])
+                            response = handlePlayerChoice(player, cardChoosen, otherPlayer)
                         }
                     }
                 }
-
                 if (!hasDroppedCard) {
                     player.cardSet.removeAt(cardChoice)
                     pickACard(player)
                 }
-
-                Thread.sleep(1000)
+                Thread.sleep(2000)
                 checkGameEnd()
             }
         }
     }
 
-    private fun dropACard(player: Player){
+    private fun dropACard(player: Player) {
         val cardId = mainView.askPlayerWhichCardToDrop(player)
         val chosenCard = player.cardSet[cardId]
-
         player.cardSet.remove(chosenCard)
-        println("Tu as choisis de défausser cette carte : $chosenCard")
-
+        mainView.displayCardPlayed(chosenCard,true)
         pickACard(player)
     }
 
-    private fun pickACard(player: Player){
+    private fun pickACard(player: Player) {
         val pickedCard = cardDeck.removeAt(0)
         player.cardSet.add(pickedCard)
         mainView.displayPickedCard(pickedCard)
@@ -108,8 +98,8 @@ class MainPresenter {
     /**
      * Vérifie le choix de la carte du joueur, et agit en conséquence
      */
-    private fun handlePlayerChoice(player: Player, cardChoice : Card, foe : Player? = null): Boolean {
-        when(cardChoice.id) {
+    private fun handlePlayerChoice(player: Player, cardChoice: Card, foe: Player? = null): Boolean {
+        when (cardChoice.id) {
             Card.SPEED25.id -> return addSpeedToPlayer(player, 25)
             Card.SPEED50.id -> return addSpeedToPlayer(player, 50)
             Card.SPEED75.id -> return addSpeedToPlayer(player, 75)
@@ -138,13 +128,13 @@ class MainPresenter {
      */
     private fun addBuffToPlayer(player: Player, id: Int): Boolean {
         val botteStatus = BotteStatus.fromInt(id)
-        if(botteStatus != null) {
+        if (botteStatus != null) {
             var isBuffable: Boolean = true
             player.buffStatusList.forEach {
-                if(it.id == botteStatus.id) isBuffable = false
+                if (it.id == botteStatus.id) isBuffable = false
             }
 
-            if(isBuffable) {
+            if (isBuffable) {
                 player.buffStatusList.add(botteStatus)
                 return true
             }
@@ -157,21 +147,21 @@ class MainPresenter {
      */
     private fun addDeBuffToPlayer(foe: Player?, id: Int): Boolean {
         foe?.buffStatusList?.forEach {
-            if(it.id == id || it.id == BotteStatus.PRIMARY.id && id == DebuffStatus.REDLIGHT.id) {
+            if (it.id == id || it.id == BotteStatus.PRIMARY.id && id == DebuffStatus.REDLIGHT.id) {
                 return false
             }
         }
 
         val debuffStatus = DebuffStatus.fromInt(id)
-        if(debuffStatus != null && foe?.debuffStatusList !== null) {
+        if (debuffStatus != null && foe?.debuffStatusList !== null) {
             var isDebuffable: Boolean = true
             foe.debuffStatusList.forEach {
-                if(it.id == debuffStatus.id) {
+                if (it.id == debuffStatus.id) {
                     isDebuffable = false
                 }
             }
 
-            if(isDebuffable) {
+            if (isDebuffable) {
                 foe.debuffStatusList.add(debuffStatus)
                 return true
             }
@@ -183,7 +173,7 @@ class MainPresenter {
      * Supprime un débuff lorsque le joueur utilise une carte buff pour supprimer un débuff
      */
     private fun removeDeBuffToPlayer(player: Player, id: Int): Boolean {
-        val filteredDebuffStatusList: MutableList<DebuffStatus> = player.debuffStatusList.filter {it.id != id}.toMutableList()
+        val filteredDebuffStatusList: MutableList<DebuffStatus> = player.debuffStatusList.filter { it.id != id }.toMutableList()
         /*
         if(filteredDebuffStatusList.isNotEmpty()) {
             player.debuffStatusList = filteredDebuffStatusList
@@ -197,7 +187,7 @@ class MainPresenter {
      * Ajoute le nombre de points au score
      */
     private fun addSpeedToPlayer(player: Player, speed: Int): Boolean {
-        if(player.debuffStatusList.size == 0) {
+        if (player.debuffStatusList.size == 0) {
             player.score += speed
             return true
         } else {
@@ -208,41 +198,41 @@ class MainPresenter {
     /**
      * Prépare la pioche
      */
-    fun prepareCardList() : MutableList<Card> {
-        var cardList : MutableList<Card> =  mutableListOf(Card.ACE, Card.TANKER, Card.PUNCTURE_PROOF, Card.PRIMARY)
-        for (i in 1 .. 3) {
+    fun prepareCardList(): MutableList<Card> {
+        var cardList: MutableList<Card> = mutableListOf(Card.ACE, Card.TANKER, Card.PUNCTURE_PROOF, Card.PRIMARY)
+        for (i in 1..3) {
             cardList.add(Card.ACCIDENT)
             cardList.add(Card.OUTOFFUEL)
             cardList.add(Card.PUNCTURE)
         }
 
-        for (i in 1 .. 4) {
+        for (i in 1..4) {
             cardList.add(Card.LIMIT)
             cardList.add(Card.SPEED200)
         }
 
-        for (i in 1 .. 4) {
+        for (i in 1..4) {
             cardList.add(Card.REDLIGHT)
         }
 
-        for (i in 1 .. 6) {
+        for (i in 1..6) {
             cardList.add(Card.REPAIR)
             cardList.add(Card.REFUEL)
             cardList.add(Card.PUNCTURE_REPARE)
             cardList.add(Card.NOLIMIT)
         }
 
-        for (i in 1 .. 14) {
+        for (i in 1..14) {
             cardList.add(Card.GREENLIGHT)
         }
 
-        for (i in 1 .. 10) {
+        for (i in 1..10) {
             cardList.add(Card.SPEED25)
             cardList.add(Card.SPEED50)
             cardList.add(Card.SPEED75)
         }
 
-        for (i in 1 .. 12) {
+        for (i in 1..12) {
             cardList.add(Card.SPEED100)
         }
 
@@ -254,7 +244,7 @@ class MainPresenter {
      */
     private fun checkGameEnd() {
         board.playerList.forEach {
-            if(it.score >= 1000 || cardDeck.size == 0) {
+            if (it.score >= 1000 || cardDeck.size == 0) {
                 gameEnd = true
             }
         }
