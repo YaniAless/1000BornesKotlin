@@ -9,6 +9,7 @@ class MainPresenter {
     lateinit var board: Board
     val mainView = MainView()
     var cardDeck = prepareCardList()
+    var gameTurns = 0
     //private var presenter: GamePresenter = GamePresenter(this)
 
     init {
@@ -44,7 +45,8 @@ class MainPresenter {
         Thread.sleep(1500)
         while (!gameEnd) {
             board.playerList.forEach { player ->
-
+                gameTurns++
+                mainView.displayTurnNumber(gameTurns)
                 var response = false
                 var cardChoice: Int = 0
                 var hasDroppedCard = false
@@ -130,7 +132,7 @@ class MainPresenter {
     private fun addBuffToPlayer(player: Player, id: Int): Boolean {
         val botteStatus = BotteStatus.fromInt(id)
         if (botteStatus != null) {
-            var isBuffable: Boolean = true
+            var isBuffable = true
             player.buffStatusList.forEach {
                 if (it.id == botteStatus.id) isBuffable = false
             }
@@ -148,7 +150,7 @@ class MainPresenter {
      */
     private fun addDeBuffToPlayer(foe: Player?, id: Int): Boolean {
         foe?.buffStatusList?.forEach {
-            if (it.id == id || it.id == BotteStatus.PRIMARY.id && id == DebuffStatus.REDLIGHT.id) {
+            if (it.id == id || it.id == BotteStatus.PRIMARY.id || id == DebuffStatus.REDLIGHT.id) {
                 return false
             }
         }
