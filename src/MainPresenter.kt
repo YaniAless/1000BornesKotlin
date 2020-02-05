@@ -23,7 +23,7 @@ class MainPresenter {
 
         var playerList: Array<Player> = arrayOf()
         for (p in 1..PLAYER_NUMBER) {
-            var cardSet = mutableListOf<Card>()
+            val cardSet = mutableListOf<Card>()
             for (i in 1..6) {
                 cardSet.add(cardDeck.removeAt(0))
             }
@@ -42,7 +42,7 @@ class MainPresenter {
         mainView.displayGameTitle()
         mainView.displayStartMessage()
         Thread.sleep(1500)
-        while (gameEnd == false) {
+        while (!gameEnd) {
             board.playerList.forEach { player ->
 
                 var response = false
@@ -199,7 +199,7 @@ class MainPresenter {
     /**
      * Prépare la pioche
      */
-    fun prepareCardList(): MutableList<Card> {
+    private fun prepareCardList(): MutableList<Card> {
         var cardList: MutableList<Card> = mutableListOf(Card.ACE, Card.TANKER, Card.PUNCTURE_PROOF, Card.PRIMARY)
         for (i in 1..3) {
             cardList.add(Card.ACCIDENT)

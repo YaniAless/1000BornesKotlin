@@ -18,12 +18,12 @@ class MainView {
     }
 
     private fun readPlayerCardChoice(isDropping: Boolean = false): Int {
-        var playerChoice: String? = readLine()
-        var max = if (isDropping) 6 else 7
+        val playerChoice: String? = readLine()
+        val max = if (isDropping) 6 else 7
 
         playerChoice?.let {
             try {
-                var choice: Int = playerChoice.toInt()
+                val choice: Int = playerChoice.toInt()
                 if (choice in 1..max) {
                     return choice - 1
                 } else {
@@ -39,10 +39,8 @@ class MainView {
     }
 
     private fun displayPlayerCardSet(player: Player, isDropping: Boolean = false) {
-        var i = 1
-        player.cardSet.forEach {
-            println("$i - ${it.title} : ${if (it.buff != null) it.buff else it.debuff}")
-            i++
+        player.cardSet.forEachIndexed { i, it ->
+            println("${i+1} - ${it.title} : ${if (it.buff != null) it.buff else it.debuff}")
         }
         if (!isDropping) println("7 - Defausser : Tu choisis de defausser une carte")
     }
@@ -67,8 +65,8 @@ class MainView {
         var playerChoice: String? = readLine()
         playerChoice?.let {
             try {
-                var choice: Int = playerChoice.toInt()
-                if (choice >= 0 && choice <= playerList.count()) {
+                val choice: Int = playerChoice.toInt()
+                if (choice in 0..playerList.count()) {
                     return choice
                 } else {
                     println("Il faut choisir une valeur comprise entre 0 et ${playerList.count()}")
@@ -84,14 +82,14 @@ class MainView {
 
     private fun displayPlayerList(playerList: List<Player>) {
         println("Voici la liste des cibles, fais le bon choix !")
-        var i = 0
-        playerList.forEach {
+        //var i = 0
+        playerList.forEachIndexed { i, it ->
             println("-------------------------------------CIBLE NUMERO '$i'------------------------------------")
             print("Cible : '${it.name}' --- Score actuel : '${it.score}'\n")
             if (it.buffStatusList.count() > 0) println("Liste des bonus : ${it.buffStatusList}") else println("Il ne possède aucun bonus")
             if (it.debuffStatusList.count() > 0) println("Liste des malus : ${it.debuffStatusList}") else println("Il ne possède aucun malus")
             println("-------------------------------------CIBLE NUMERO '$i'------------------------------------")
-            i++
+            //i++
         }
     }
 
