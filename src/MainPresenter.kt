@@ -1,16 +1,12 @@
 import data.model.*
-import jdk.jfr.Threshold
 
-const val PLAYER_NUMBER = 2
-
-class MainPresenter {
+class MainPresenter(private val playerNumber: Int) {
 
     var gameEnd: Boolean = false
     lateinit var board: Board
     val mainView = MainView()
     var cardDeck = prepareCardList()
     var gameTurns = 0
-    //private var presenter: GamePresenter = GamePresenter(this)
 
     init {
         prepareGame()
@@ -23,7 +19,7 @@ class MainPresenter {
     private fun prepareGame() {
 
         var playerList: Array<Player> = arrayOf()
-        for (p in 1..PLAYER_NUMBER) {
+        for (p in 1.. playerNumber) {
             val cardSet = mutableListOf<Card>()
             for (i in 1..6) {
                 cardSet.add(cardDeck.removeAt(0))
@@ -93,9 +89,11 @@ class MainPresenter {
     }
 
     private fun pickACard(player: Player) {
-        val pickedCard = cardDeck.removeAt(0)
-        player.cardSet.add(pickedCard)
-        mainView.displayPickedCard(pickedCard)
+        if(cardDeck.isNotEmpty()) {
+            val pickedCard = cardDeck.removeAt(0)
+            player.cardSet.add(pickedCard)
+            mainView.displayPickedCard(pickedCard)
+        }
     }
 
     /**
@@ -176,12 +174,11 @@ class MainPresenter {
      * Supprime un débuff lorsque le joueur utilise une carte buff pour supprimer un débuff
      */
     private fun removeDeBuffToPlayer(player: Player, id: Int): Boolean {
+        if(!player.debuffStatusList.contains(DebuffStatus.fromInt(id))) {
+            return false
+        }
+
         val filteredDebuffStatusList: MutableList<DebuffStatus> = player.debuffStatusList.filter { it.id != id }.toMutableList()
-        /*
-        if(filteredDebuffStatusList.isNotEmpty()) {
-            player.debuffStatusList = filteredDebuffStatusList
-            return true
-        }*/
         player.debuffStatusList = filteredDebuffStatusList
         return true
     }
