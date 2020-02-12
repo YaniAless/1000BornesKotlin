@@ -44,7 +44,7 @@ class MainPresenter(private val playerNumber: Int) {
                 gameTurns++
                 mainView.displayTurnNumber(gameTurns)
                 var response = false
-                var cardChoice: Int = 0
+                var cardChoice = 0
                 var hasDroppedCard = false
                 while (!response) {
                     mainView.displayTurnMessage(player)
@@ -73,9 +73,12 @@ class MainPresenter(private val playerNumber: Int) {
                     player.cardSet.removeAt(cardChoice)
                     pickACard(player)
                 }
-                println("Au tour de l'adversaire !")
-                Thread.sleep(2000)
                 checkGameEnd()
+                if(!gameEnd)
+                {
+                    println("Au tour de l'adversaire !")
+                }
+                Thread.sleep(2000)
             }
         }
     }
@@ -155,7 +158,7 @@ class MainPresenter(private val playerNumber: Int) {
 
         val debuffStatus = DebuffStatus.fromInt(id)
         if (debuffStatus != null && foe?.debuffStatusList !== null) {
-            var isDebuffable: Boolean = true
+            var isDebuffable = true
             foe.debuffStatusList.forEach {
                 if (it.id == debuffStatus.id) {
                     isDebuffable = false
@@ -199,7 +202,7 @@ class MainPresenter(private val playerNumber: Int) {
      * Prépare la pioche
      */
     private fun prepareCardList(): MutableList<Card> {
-        var cardList: MutableList<Card> = mutableListOf(Card.ACE, Card.TANKER, Card.PUNCTURE_PROOF, Card.PRIMARY)
+        val cardList: MutableList<Card> = mutableListOf(Card.ACE, Card.TANKER, Card.PUNCTURE_PROOF, Card.PRIMARY)
         for (i in 1..3) {
             cardList.add(Card.ACCIDENT)
             cardList.add(Card.OUTOFFUEL)
@@ -246,6 +249,8 @@ class MainPresenter(private val playerNumber: Int) {
         board.playerList.forEach {
             if (it.score >= 1000 || cardDeck.size == 0) {
                 gameEnd = true
+                println()
+                println(it.name + ", tu as gagné la partie !!")
             }
         }
     }

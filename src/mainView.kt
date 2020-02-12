@@ -61,7 +61,7 @@ class MainView {
     }
 
     private fun readPlayerTargetChoice(playerList: List<Player>): Int {
-        var playerChoice: String? = readLine()
+        val playerChoice: String? = readLine()
         playerChoice?.let {
             try {
                 val choice: Int = playerChoice.toInt()
